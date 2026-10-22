@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Topic, Material } from '@/lib/types';
+import { Topic } from '@/lib/types';
 import { 
   addTopic, 
   updateTopic, 
@@ -25,7 +25,6 @@ import {
   Image as ImageIcon, 
   ExternalLink 
 } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
 
 interface TopicListProps {
   courseId: string;
@@ -38,7 +37,6 @@ export function TopicList({ courseId, topics }: TopicListProps) {
   const [editName, setEditName] = useState('');
   const [deleteTopicId, setDeleteTopicId] = useState<string | null>(null);
   const [uploadingTopicId, setUploadingTopicId] = useState<string | null>(null);
-  const [uploadProgress, setUploadProgress] = useState<{ [key: string]: number }>({});
 
   const handleAddTopic = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,17 +75,17 @@ export function TopicList({ courseId, topics }: TopicListProps) {
 
   const handleFileUpload = async (topicId: string, files: FileList) => {
     setUploadingTopicId(topicId);
-    setUploadProgress(prev => ({ ...prev, [topicId]: 0 }));
 
     for (const file of Array.from(files)) {
+      // 100MB Size limit validation
       if (file.size > 100 * 1024 * 1024) {
-        alert(`File ${file.name} is too large. Maximum size is 100MB.`);
+        alert(`File ${file.name} is too large. Maximum size allowed is 100MB.`);
         continue;
       }
 
       const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/gif', 'image/webp'];
       if (!allowedTypes.includes(file.type)) {
-        alert(`File ${file.name} has an unsupported type. Only PDF and images are allowed.`);
+        alert(`File ${file.name} has an unsupported format. Only PDF and images are allowed.`);
         continue;
       }
 
@@ -120,6 +118,7 @@ export function TopicList({ courseId, topics }: TopicListProps) {
 
   return (
     <div className="space-y-6">
+      {/* Add Topic Form */}
       <form onSubmit={handleAddTopic} className="flex gap-2">
         <input
           type="text"
@@ -128,11 +127,15 @@ export function TopicList({ courseId, topics }: TopicListProps) {
           placeholder="Add a new topic..."
           className="flex-1 px-4 py-2 rounded-xl border bg-card text-card-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
         />
-        <Button type="submit" size="sm" variant="primary" className="gap-1">
+        <button 
+          type="submit" 
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium flex items-center gap-1 hover:opacity-90"
+        >
           <Plus className="h-4 w-4" /> Add Topic
-        </Button>
+        </button>
       </form>
 
+      {/* Topics List */}
       <div className="space-y-4">
         {topics.map((topic) => {
           const isUploading = uploadingTopicId === topic.id;
@@ -149,46 +152,57 @@ export function TopicList({ courseId, topics }: TopicListProps) {
                       className="flex-1 px-3 py-1 rounded-lg border bg-background text-sm"
                       autoFocus
                     />
-                    <Button size="sm" variant="ghost" onClick={handleSaveEdit}>
-                      <Check className="h-4 w-4 text-green-600" />
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={() => setEditingTopicId(null)}>
-                      <X className="h-4 w-4 text-red-600" />
-                    </Button>
+                    <button onClick={handleSaveEdit} className="p-1 text-green-600 hover:bg-green-50 rounded">
+                      <Check className="h-4 w-4" />
+                    </button>
+                    <button onClick={() => setEditingTopicId(null)} className="p-1 text-red-600 hover:bg-red-50 rounded">
+                      <X className="h-4 w-4" />
+                    </button>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
                     <h4 className="font-semibold text-base">{topic.name}</h4>
-                    <Button size="sm" variant="ghost" onClick={() => handleStartEdit(topic)}>
-                      <Edit2 className="h-3.5 w-3.5 text-muted-foreground" />
-                    </Button>
+                    <button onClick={() => handleStartEdit(topic)} className="p-1 text-muted-foreground hover:text-foreground">
+                      <Edit2 className="h-3.5 w-3.5" />
+                    </button>
                   </div>
                 )}
 
-                <Button size="sm" variant="ghost" onClick={() => handleDeleteTopic(topic.id)}>
-                  <Trash2 className="h-4 w-4 text-red-500" />
-                </Button>
+                <button onClick={() => handleDeleteTopic(topic.id)} className="p-1 text-red-500 hover:bg-red-50 rounded">
+                  <Trash2 className="h-4 w-4" />
+                </button>
               </div>
 
+              {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-2 text-xs">
-                <Button size="sm" variant="secondary" className="gap-1 text-xs" onClick={() => handleRevision(topic.id)}>
+                <button 
+                  onClick={() => handleRevision(topic.id)} 
+                  className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-lg flex items-center gap-1 font-medium hover:opacity-90"
+                >
                   <RotateCcw className="h-3 w-3" /> Revised ({topic.revisionCount})
-                </Button>
-                <Button size="sm" variant="secondary" className="gap-1 text-xs" onClick={() => handleAddTime(topic.id, 15)}>
+                </button>
+                <button 
+                  onClick={() => handleAddTime(topic.id, 15)} 
+                  className="px-3 py-1.5 border rounded-lg flex items-center gap-1 hover:bg-secondary/50"
+                >
                   <Clock className="h-3 w-3" /> +15m
-                </Button>
-                <Button size="sm" variant="secondary" className="gap-1 text-xs" onClick={() => handleAddTime(topic.id, 30)}>
+                </button>
+                <button 
+                  onClick={() => handleAddTime(topic.id, 30)} 
+                  className="px-3 py-1.5 border rounded-lg flex items-center gap-1 hover:bg-secondary/50"
+                >
                   <Clock className="h-3 w-3" /> +30m
-                </Button>
+                </button>
                 <span className="text-muted-foreground font-mono ml-auto">
                   {Math.floor(topic.timeInvested / 60)}h {topic.timeInvested % 60}m spent
                 </span>
               </div>
 
+              {/* Materials Section */}
               <div className="border-t pt-3">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Materials</span>
-                  <label className="cursor-pointer inline-flex items-center gap-1 text-xs bg-primary text-primary-foreground px-3 py-1 rounded-lg hover:opacity-90 transition-opacity">
+                  <label className="cursor-pointer inline-flex items-center gap-1 text-xs bg-primary text-primary-foreground px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity font-medium">
                     <Upload className="h-3 w-3" /> Add File (up to 100MB)
                     <input
                       type="file"
@@ -202,9 +216,10 @@ export function TopicList({ courseId, topics }: TopicListProps) {
                 </div>
 
                 {isUploading && (
-                  <div className="text-xs text-muted-foreground animate-pulse">Uploading file...</div>
+                  <div className="text-xs text-muted-foreground animate-pulse py-1">Uploading file...</div>
                 )}
 
+                {/* Material Attachments List */}
                 {topic.materials && topic.materials.length > 0 && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                     {topic.materials.map((mat) => (
@@ -215,9 +230,9 @@ export function TopicList({ courseId, topics }: TopicListProps) {
                             {mat.name}
                           </a>
                         </div>
-                        <div className="flex items-center gap-1 shrink-0">
-                          <a href={mat.url} target="_blank" rel="noreferrer">
-                            <ExternalLink className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
+                          <div className="flex items-center gap-1 shrink-0">
+                          <a href={mat.url} target="_blank" rel="noreferrer" className="p-1 hover:text-foreground">
+                            <ExternalLink className="h-3.5 w-3.5" />
                           </a>
                           <button onClick={() => handleDeleteMaterial(topic.id, mat.id)} className="p-1 hover:text-red-500">
                             <Trash2 className="h-3.5 w-3.5" />
@@ -233,14 +248,25 @@ export function TopicList({ courseId, topics }: TopicListProps) {
         })}
       </div>
 
+      {/* Delete Topic Modal */}
       {deleteTopicId && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-card p-6 rounded-2xl max-w-sm w-full space-y-4 border shadow-xl">
             <h3 className="font-bold text-lg">Delete Topic?</h3>
-            <p className="text-sm text-muted-foreground">Are you sure you want to delete this topic and all its materials?</p>
+            <p className="text-sm text-muted-foreground">Are you sure you want to delete this topic and all its attached materials?</p>
             <div className="flex justify-end gap-2">
-              <Button size="sm" variant="secondary" onClick={() => setDeleteTopicId(null)}>Cancel</Button>
-              <Button size="sm" variant="primary" onClick={confirmDeleteTopic} className="bg-red-600 hover:bg-red-700 text-white">Delete</Button>
+              <button 
+                onClick={() => setDeleteTopicId(null)} 
+                className="px-4 py-2 border rounded-xl text-sm hover:bg-secondary"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmDeleteTopic} 
+                className="px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-medium hover:bg-red-700"
+              >
+                Delete
+              </button>
             </div>
           </div>
         </div>
