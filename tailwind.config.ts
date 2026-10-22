@@ -1,0 +1,88 @@
+import type { Config } from 'tailwindcss'
+
+const config: Config = {
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        // Tailwind default utility colors (required for border-bg-foreground etc.)
+        border: 'rgb(var(--border))',
+        background: 'rgb(var(--background))',
+        foreground: 'rgb(var(--foreground))',
+        card: 'rgb(var(--card))',
+        'card-foreground': 'rgb(var(--card-foreground))',
+        primary: 'rgb(var(--primary))',
+        'primary-foreground': 'rgb(var(--primary-foreground))',
+        secondary: 'rgb(var(--secondary))',
+        'secondary-foreground': 'rgb(var(--secondary-foreground))',
+        muted: 'rgb(var(--muted))',
+        'muted-foreground': 'rgb(var(--muted-foreground))',
+        accent: 'rgb(var(--accent))',
+        'accent-foreground': 'rgb(var(--accent-foreground))',
+        destructive: 'rgb(var(--destructive))',
+        'destructive-foreground': 'rgb(var(--destructive-foreground))',
+
+        // Theme-specific color palettes (overrides for each theme)
+        'kitty': {
+          50: '#fff0f5',
+          100: '#ffe0eb',
+          200: '#ffc8d6',
+          300: '#ffa3b6',
+          400: '#ff7490',
+          500: '#ff4d6f',
+          600: '#f53557',
+          700: '#d02646',
+          800: '#ac213a',
+          900: '#8d1f33',
+          950: '#510b1b',
+        },
+        'dorami': {
+          50: '#fffef0',
+          100: '#fffce0',
+          200: '#fff8b8',
+          300: '#fff37a',
+          400: '#ffee3d',
+          500: '#fde01a',
+          600: '#e5c111',
+          700: '#b89611',
+          800: '#937514',
+          900: '#766014',
+          950: '#423107',
+        },
+        'dorami-blue': {
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          200: '#bae6fd',
+          300: '#7dd3fc',
+          400: '#38bdf8',
+          500: '#0ea5e9',
+          600: '#0284c7',
+          700: '#0369a1',
+          800: '#075985',
+          900: '#0c4a6e',
+          950: '#082f49',
+        },
+        'classic': {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+          950: '#020617',
+        },
+      },
+    },
+  },
+  plugins: [],
+}
+export default config

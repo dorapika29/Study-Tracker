@@ -1,0 +1,205 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base Default Settings */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 3.9%;
+  --border: 240 5.9% 90%;
+  --primary: 340 82% 70%;
+  --primary-foreground: 0 0% 100%;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  min-height: 100vh;
+}
+
+/* ==========================================
+   1. HELLO KITTY THEME (Soft Pink & Light Pink Cards)
+   ========================================== */
+[data-theme="hello-kitty"],
+.hello-kitty {
+  --background: 340 100% 94%;
+  --card: 0 0% 100%;
+  --foreground: 18, 50%, 25%;
+  --border: 340 60% 80%;
+  --primary: 330 85% 65%;
+}
+
+body[data-theme="hello-kitty"],
+[data-theme="hello-kitty"] main,
+[data-theme="hello-kitty"] body {
+  background-color: #FFE4EC !important;
+  color: #781333 !important; /* Deep contrast shade */
+  background-image: radial-gradient(#FFB6C1 15%, transparent 16%), radial-gradient(#FFB6C1 15%, transparent 16%);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+}
+
+/* Overwrite all cards and blue containers with Light Pink (#FFD1DC) */
+[data-theme="hello-kitty"] div[class*="bg-blue"],
+[data-theme="hello-kitty"] div[class*="bg-indigo"],
+[data-theme="hello-kitty"] div[class*="bg-primary"],
+[data-theme="hello-kitty"] .bg-card {
+  background-color: #FFD1DC !important;
+  border: 2px solid #FF97B7 !important;
+  color: #781333 !important;
+}
+
+[data-theme="hello-kitty"] div[class*="bg-blue"] span,
+[data-theme="hello-kitty"] div[class*="bg-blue"] h3,
+[data-theme="hello-kitty"] div[class*="bg-blue"] p,
+[data-theme="hello-kitty"] div[class*="bg-blue"] div {
+  color: #781333 !important;
+}
+
+[data-theme="hello-kitty"] h1::before {
+  content: "🐱 🐾 ";
+}
+[data-theme="hello-kitty"] h2::before {
+  content: "🐾 ";
+}
+
+
+/* ==========================================
+   2. DORAMI THEME (Light Yellow & Soft Yellow Cards)
+   ========================================== */
+[data-theme="dorami"],
+.dorami {
+  --background: 51 100% 92%;
+  --card: 0 0% 100%;
+  --foreground: 35, 60%, 20%;
+  --border: 45 75% 75%;
+  --primary: 42 100% 50%;
+}
+
+body[data-theme="dorami"],
+[data-theme="dorami"] main,
+[data-theme="dorami"] body {
+  background-color: #FFFDEB !important;
+  color: #5C3A00 !important; /* Deep contrast shade for Dorami */
+  background-image: radial-gradient(#FFEE58 20%, transparent 21%);
+  background-size: 50px 50px;
+}
+
+/* Overwrite all cards and blue containers with Soft Yellow */
+[data-theme="dorami"] div[class*="bg-blue"],
+[data-theme="dorami"] div[class*="bg-indigo"],
+[data-theme="dorami"] div[class*="bg-primary"],
+[data-theme="dorami"] .bg-card {
+  background-color: #FFF3CD !important;
+  border: 2px solid #FFEE58 !important;
+  color: #5C3A00 !important;
+}
+
+[data-theme="dorami"] div[class*="bg-blue"] span,
+[data-theme="dorami"] div[class*="bg-blue"] h3,
+[data-theme="dorami"] div[class*="bg-blue"] p {
+  color: #5C3A00 !important;
+}
+
+[data-theme="dorami"] h1::before {
+  content: "🌟 🎀 ";
+}
+[data-theme="dorami"] h2::before {
+  content: "🎀 ";
+}
+
+
+/* ==========================================
+   3. CLASSIC NOTEBOOK THEME (Warm Notebook)
+   ========================================== */
+[data-theme="classic"],
+.classic {
+  --background: 40 30% 95%;
+  --card: 0 0% 100%;
+  --foreground: 30 20% 25%;
+  --border: 35 20% 80%;
+  --primary: 30 40% 45%;
+}
+
+body[data-theme="classic"],
+[data-theme="classic"] main,
+[data-theme="classic"] body {
+  background-color: #F7F3E9 !important; /* Warm notebook parchment color */
+  color: #3D3327 !important;
+  background-image: linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
+  background-size: 100% 24px;
+}
+
+[data-theme="classic"] div[class*="bg-blue"],
+[data-theme="classic"] div[class*="bg-indigo"],
+[data-theme="classic"] div[class*="bg-primary"],
+[data-theme="classic"] .bg-card {
+  background-color: #FFFEFA !important;
+  border: 1px solid #E6DFC5 !important;
+  color: #3D3327 !important;
+}
+
+[data-theme="classic"] h1::before {
+  content: "📖 ";
+}
+/* ====================================================
+   FORCE OVERRIDE ALL BLUE ELEMENTS TO LIGHT PINK
+   ==================================================== */
+
+/* Target ALL cards and divs inside Hello Kitty theme */
+[data-theme="hello-kitty"] div,
+[data-theme="hello-kitty"] section,
+[data-theme="hello-kitty"] article,
+[data-theme="hello-kitty"] .bg-card,
+body[data-theme="hello-kitty"] [class*="bg-"] {
+  background-color: #FFD1DC !important; /* Soft light pink */
+  border-color: #FF97B7 !important;
+  color: #781333 !important;
+}
+
+/* Keep main background polka dots intact */
+body[data-theme="hello-kitty"],
+[data-theme="hello-kitty"] main {
+  background-color: #FFE4EC !important;
+}
+
+/* Force text and numbers inside pink cards to dark plum */
+[data-theme="hello-kitty"] div *,
+[data-theme="hello-kitty"] p,
+[data-theme="hello-kitty"] span,
+[data-theme="hello-kitty"] h1,
+[data-theme="hello-kitty"] h2,
+[data-theme="hello-kitty"] h3 {
+  color: #781333 !important;
+}
+
+/* Target ALL cards and divs inside Dorami theme */
+[data-theme="dorami"] div,
+[data-theme="dorami"] section,
+[data-theme="dorami"] article,
+[data-theme="dorami"] .bg-card,
+body[data-theme="dorami"] [class*="bg-"] {
+  background-color: #FFF3CD !important; /* Soft yellow */
+  border-color: #FFEE58 !important;
+  color: #5C3A00 !important;
+}
+
+body[data-theme="dorami"],
+[data-theme="dorami"] main {
+  background-color: #FFFDEB !important;
+}
+
+[data-theme="dorami"] div *,
+[data-theme="dorami"] p,
+[data-theme="dorami"] span,
+[data-theme="dorami"] h1,
+[data-theme="dorami"] h2,
+[data-theme="dorami"] h3 {
+  color: #5C3A00 !important;
+}
