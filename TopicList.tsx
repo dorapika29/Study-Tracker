@@ -80,7 +80,6 @@ export function TopicList({ courseId, topics }: TopicListProps) {
     setUploadProgress(prev => ({ ...prev, [topicId]: 0 }));
 
     for (const file of Array.from(files)) {
-      // 100MB Limit Check
       if (file.size > 100 * 1024 * 1024) {
         alert(`File ${file.name} is too large. Maximum size is 100MB.`);
         continue;
@@ -94,7 +93,6 @@ export function TopicList({ courseId, topics }: TopicListProps) {
 
       try {
         let fileUrl = '';
-        // Small files (<4MB) use Base64; large files (up to 100MB) use Object URLs
         if (file.size <= 4 * 1024 * 1024) {
           fileUrl = await fileToBase64(file);
         } else {
@@ -122,7 +120,6 @@ export function TopicList({ courseId, topics }: TopicListProps) {
 
   return (
     <div className="space-y-6">
-      {/* Add Topic Form */}
       <form onSubmit={handleAddTopic} className="flex gap-2">
         <input
           type="text"
@@ -131,16 +128,14 @@ export function TopicList({ courseId, topics }: TopicListProps) {
           placeholder="Add a new topic..."
           className="flex-1 px-4 py-2 rounded-xl border bg-card text-card-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
         />
-        <Button type="submit" size="sm" className="gap-1">
+        <Button type="submit" size="sm" variant="primary" className="gap-1">
           <Plus className="h-4 w-4" /> Add Topic
         </Button>
       </form>
 
-      {/* Topics List */}
       <div className="space-y-4">
         {topics.map((topic) => {
           const isUploading = uploadingTopicId === topic.id;
-          const progress = uploadProgress[topic.id] || 0;
 
           return (
             <div key={topic.id} className="p-4 rounded-2xl border bg-card text-card-foreground space-y-4 shadow-sm">
@@ -154,36 +149,35 @@ export function TopicList({ courseId, topics }: TopicListProps) {
                       className="flex-1 px-3 py-1 rounded-lg border bg-background text-sm"
                       autoFocus
                     />
-                    <Button size="icon-sm" variant="ghost" onClick={handleSaveEdit}>
+                    <Button size="sm" variant="ghost" onClick={handleSaveEdit}>
                       <Check className="h-4 w-4 text-green-600" />
                     </Button>
-                    <Button size="icon-sm" variant="ghost" onClick={() => setEditingTopicId(null)}>
+                    <Button size="sm" variant="ghost" onClick={() => setEditingTopicId(null)}>
                       <X className="h-4 w-4 text-red-600" />
                     </Button>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
                     <h4 className="font-semibold text-base">{topic.name}</h4>
-                    <Button size="icon-sm" variant="ghost" onClick={() => handleStartEdit(topic)}>
+                    <Button size="sm" variant="ghost" onClick={() => handleStartEdit(topic)}>
                       <Edit2 className="h-3.5 w-3.5 text-muted-foreground" />
                     </Button>
                   </div>
                 )}
 
-                <Button size="icon-sm" variant="ghost" onClick={() => handleDeleteTopic(topic.id)}>
+                <Button size="sm" variant="ghost" onClick={() => handleDeleteTopic(topic.id)}>
                   <Trash2 className="h-4 w-4 text-red-500" />
                 </Button>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 <Button size="sm" variant="secondary" className="gap-1 text-xs" onClick={() => handleRevision(topic.id)}>
                   <RotateCcw className="h-3 w-3" /> Revised ({topic.revisionCount})
                 </Button>
-                <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => handleAddTime(topic.id, 15)}>
+                <Button size="sm" variant="secondary" className="gap-1 text-xs" onClick={() => handleAddTime(topic.id, 15)}>
                   <Clock className="h-3 w-3" /> +15m
                 </Button>
-                <Button size="sm" variant="outline" className="gap-1 text-xs" onClick={() => handleAddTime(topic.id, 30)}>
+                <Button size="sm" variant="secondary" className="gap-1 text-xs" onClick={() => handleAddTime(topic.id, 30)}>
                   <Clock className="h-3 w-3" /> +30m
                 </Button>
                 <span className="text-muted-foreground font-mono ml-auto">
@@ -191,7 +185,6 @@ export function TopicList({ courseId, topics }: TopicListProps) {
                 </span>
               </div>
 
-              {/* Materials Section */}
               <div className="border-t pt-3">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Materials</span>
@@ -212,7 +205,6 @@ export function TopicList({ courseId, topics }: TopicListProps) {
                   <div className="text-xs text-muted-foreground animate-pulse">Uploading file...</div>
                 )}
 
-                {/* Material Attachments List */}
                 {topic.materials && topic.materials.length > 0 && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
                     {topic.materials.map((mat) => (
@@ -241,15 +233,14 @@ export function TopicList({ courseId, topics }: TopicListProps) {
         })}
       </div>
 
-      {/* Delete Modal Confirmation */}
       {deleteTopicId && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-card p-6 rounded-2xl max-w-sm w-full space-y-4 border shadow-xl">
             <h3 className="font-bold text-lg">Delete Topic?</h3>
             <p className="text-sm text-muted-foreground">Are you sure you want to delete this topic and all its materials?</p>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setDeleteTopicId(null)}>Cancel</Button>
-              <Button variant="destructive" onClick={confirmDeleteTopic}>Delete</Button>
+              <Button size="sm" variant="secondary" onClick={() => setDeleteTopicId(null)}>Cancel</Button>
+              <Button size="sm" variant="primary" onClick={confirmDeleteTopic} className="bg-red-600 hover:bg-red-700 text-white">Delete</Button>
             </div>
           </div>
         </div>
