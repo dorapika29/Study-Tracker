@@ -58,6 +58,15 @@ export function createCourse(name: string, description?: string, color?: string)
   saveData(data);
 }
 
+export function updateCourse(id: string, updates: Partial<Course>): void {
+  const data = getData();
+  const course = data.courses.find(c => c.id === id);
+  if (course) {
+    Object.assign(course, updates);
+    saveData(data);
+  }
+}
+
 export function deleteCourse(courseId: string): void {
   const data = getData();
   data.courses = data.courses.filter(c => c.id !== courseId);
@@ -65,6 +74,12 @@ export function deleteCourse(courseId: string): void {
 }
 
 // --- Topics & Materials ---
+export function getTopics(courseId: string): Topic[] {
+  const data = getData();
+  const course = data.courses.find(c => c.id === courseId);
+  return course ? course.topics || [] : [];
+}
+
 export function createTopic(courseId: string, name: string): void {
   const data = getData();
   const course = data.courses.find(c => c.id === courseId);
@@ -209,6 +224,34 @@ export function setTheme(theme: string): void {
 }
 
 // --- Stats & Analytics Helpers ---
+export function getTotalStudyTime(): number {
+  const courses = getCourses();
+  let total = 0;
+  courses.forEach(c => {
+    if (c.topics) {
+      c.topics.forEach(t => {
+        total += t.timeInvested || 0;
+      });
+    }
+  });
+  return total;
+}
+
+export function getTotalTopicsCount(): number {
+  const courses = getCourses();
+  let count = 0;
+  courses.forEach(c => {
+    if (c.topics) {
+      count += c.topics.length;
+    }
+  });
+  return count;
+}
+
+export function getWeekStudyTime(): number {
+  return 0;
+}
+
 export function getDailyStats(dateStr?: string): { timeSpent: number; topicsStudied: number } {
   return { timeSpent: 0, topicsStudied: 0 };
 }
