@@ -9,8 +9,7 @@ import {
   incrementRevision, 
   addTimeInvested, 
   addMaterial, 
-  deleteMaterial, 
-  fileToBase64 
+  deleteMaterial 
 } from '@/lib/storage';
 import { 
   Plus, 
@@ -90,12 +89,8 @@ export function TopicList({ courseId, topics }: TopicListProps) {
       }
 
       try {
-        let fileUrl = '';
-        if (file.size <= 4 * 1024 * 1024) {
-          fileUrl = await fileToBase64(file);
-        } else {
-          fileUrl = URL.createObjectURL(file);
-        }
+        // Use Object URL for files up to 100MB so large attachments work instantly without storage limits
+        const fileUrl = URL.createObjectURL(file);
 
         addMaterial(courseId, topicId, {
           name: file.name,
