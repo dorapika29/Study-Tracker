@@ -1,4 +1,13 @@
-import { AppData, Topic, Material, Course, StudySession } from './types';
+import { AppData, Topic, Course, StudySession } from './types';
+
+// Define and export Material locally to satisfy imports from storage
+export interface Material {
+  id: string;
+  name: string;
+  type: 'pdf' | 'image';
+  url: string;
+  size: number;
+}
 
 const STORAGE_KEY = 'study-tracker-data';
 
@@ -8,9 +17,9 @@ function getDefaultData(): AppData {
     sessions: [],
     settings: {
       dailyGoal: 60,
-      theme: 'light',
+      theme: 'Light' as any,
     },
-  } as any;
+  } as unknown as AppData;
 }
 
 export function getData(): AppData {
@@ -50,8 +59,6 @@ export function createCourse(name: string, description?: string, color?: string)
   const newCourse: Course = {
     id: Date.now().toString(),
     name,
-    description: description || '',
-    color: color || 'blue',
     topics: [],
   };
   data.courses.push(newCourse);
@@ -80,6 +87,11 @@ export function getTopics(courseId: string): Topic[] {
   return course ? course.topics || [] : [];
 }
 
+export function getTopic(courseId: string, topicId: string): Topic | undefined {
+  const topics = getTopics(courseId);
+  return topics.find(t => t.id === topicId);
+}
+
 export function createTopic(courseId: string, name: string): void {
   const data = getData();
   const course = data.courses.find(c => c.id === courseId);
@@ -89,8 +101,8 @@ export function createTopic(courseId: string, name: string): void {
       name,
       revisionCount: 0,
       timeInvested: 0,
-      materials: [],
     };
+    if (!course.topics) course.topics = [];
     course.topics.push(newTopic);
     saveData(data);
   }
@@ -99,7 +111,7 @@ export function createTopic(courseId: string, name: string): void {
 export function updateTopic(courseId: string, topicId: string, updates: Partial<Topic>): void {
   const data = getData();
   const course = data.courses.find(c => c.id === courseId);
-  if (course) {
+  if (course && course.topics) {
     const topic = course.topics.find(t => t.id === topicId);
     if (topic) {
       Object.assign(topic, updates);
@@ -111,7 +123,7 @@ export function updateTopic(courseId: string, topicId: string, updates: Partial<
 export function deleteTopic(courseId: string, topicId: string): void {
   const data = getData();
   const course = data.courses.find(c => c.id === courseId);
-  if (course) {
+  if (course && course.topics) {
     course.topics = course.topics.filter(t => t.id !== topicId);
     saveData(data);
   }
@@ -120,7 +132,7 @@ export function deleteTopic(courseId: string, topicId: string): void {
 export function incrementRevision(courseId: string, topicId: string): void {
   const data = getData();
   const course = data.courses.find(c => c.id === courseId);
-  if (course) {
+  if (course && course.topics) {
     const topic = course.topics.find(t => t.id === topicId);
     if (topic) {
       topic.revisionCount = (topic.revisionCount || 0) + 1;
@@ -132,7 +144,7 @@ export function incrementRevision(courseId: string, topicId: string): void {
 export function addTimeInvested(courseId: string, topicId: string, minutes: number): void {
   const data = getData();
   const course = data.courses.find(c => c.id === courseId);
-  if (course) {
+  if (course && course.topics) {
     const topic = course.topics.find(t => t.id === topicId);
     if (topic) {
       topic.timeInvested = (topic.timeInvested || 0) + minutes;
@@ -144,7 +156,7 @@ export function addTimeInvested(courseId: string, topicId: string, minutes: numb
 export function addMaterial(courseId: string, topicId: string, material: Omit<Material, 'id'>): void {
   const data = getData();
   const course = data.courses.find(c => c.id === courseId);
-  if (course) {
+  if (course && course.topics) {
     const topic = course.topics.find(t => t.id === topicId);
     if (topic) {
       if (!topic.materials) topic.materials = [];
@@ -161,10 +173,10 @@ export function addMaterial(courseId: string, topicId: string, material: Omit<Ma
 export function deleteMaterial(courseId: string, topicId: string, materialId: string): void {
   const data = getData();
   const course = data.courses.find(c => c.id === courseId);
-  if (course) {
+  if (course && course.topics) {
     const topic = course.topics.find(t => t.id === topicId);
     if (topic && topic.materials) {
-      topic.materials = topic.materials.filter(m => m.id !== materialId);
+      topic.materials = topic.materials.filter((m: any) => m.id !== materialId);
       saveData(data);
     }
   }
@@ -176,11 +188,12 @@ export function getStudySessions(): StudySession[] {
   return data.sessions || [];
 }
 
-export function createStudySession(session: Omit<StudySession, 'id'>): void {
+export function createStudySession(session: Omit<StudySession, 'id' | 'createdAt'> & { createdAt?: string }): void {
   const data = getData() as any;
   if (!data.sessions) data.sessions = [];
   const newSession = {
     id: Date.now().toString(),
+    createdAt: new Date().toISOString(),
     ...session,
   };
   data.sessions.push(newSession);
@@ -203,19 +216,19 @@ export function getDailyGoal(): number {
 
 export function setDailyGoal(goal: number): void {
   const data = getData();
-  if (!data.settings) data.settings = { dailyGoal: 60, theme: 'light' };
+  if (!data.settings) data.settings = { dailyGoal: 60, theme: 'Light' as any };
   data.settings.dailyGoal = goal;
   saveData(data);
 }
 
 export function getTheme(): string {
   const data = getData();
-  return data.settings?.theme || 'light';
+  return (data.settings?.theme as string) || 'Light';
 }
 
 export function setTheme(theme: string): void {
   const data = getData();
-  if (!data.settings) data.settings = { dailyGoal: 60, theme: 'light' };
+  if (!data.settings) data.settings = { dailyGoal: 60, theme: theme as any };
   data.settings.theme = theme as any;
   saveData(data);
   if (typeof document !== 'undefined') {
