@@ -28,19 +28,18 @@ function saveData(data: AppData): void {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    // Trigger storage event listeners if any
     window.dispatchEvent(new Event('storage'));
   } catch (error: any) {
     console.error('Storage limit reached or failed to save', error);
     if (error.name === 'QuotaExceededError' || error.code === 22) {
-      alert('Storage limit reached! Browser local storage cannot hold files this large. Try uploading files under 10MB to ensure they save properly.');
+      alert('Storage limit reached! Browser local storage cannot hold files this large.');
     } else {
       alert('Failed to save data. Storage limit may have been reached.');
     }
   }
 }
 
-// --- Course Functions ---
+// --- Courses ---
 export function getCourses(): Course[] {
   const data = getData();
   return data.courses || [];
@@ -65,7 +64,7 @@ export function deleteCourse(courseId: string): void {
   saveData(data);
 }
 
-// --- Topic Functions ---
+// --- Topics & Materials ---
 export function createTopic(courseId: string, name: string): void {
   const data = getData();
   const course = data.courses.find(c => c.id === courseId);
@@ -127,7 +126,6 @@ export function addTimeInvested(courseId: string, topicId: string, minutes: numb
   }
 }
 
-// --- Material Functions ---
 export function addMaterial(courseId: string, topicId: string, material: Omit<Material, 'id'>): void {
   const data = getData();
   const course = data.courses.find(c => c.id === courseId);
@@ -157,7 +155,12 @@ export function deleteMaterial(courseId: string, topicId: string, materialId: st
   }
 }
 
-// --- Study Session Functions ---
+// --- Study Sessions ---
+export function getStudySessions(): StudySession[] {
+  const data = getData() as any;
+  return data.sessions || [];
+}
+
 export function createStudySession(session: Omit<StudySession, 'id'>): void {
   const data = getData() as any;
   if (!data.sessions) data.sessions = [];
@@ -177,7 +180,47 @@ export function deleteStudySession(sessionId: string): void {
   }
 }
 
-// --- Analytics & Stats Helpers ---
+// --- Settings & Preferences ---
+export function getDailyGoal(): number {
+  const data = getData();
+  return data.settings?.dailyGoal || 60;
+}
+
+export function setDailyGoal(goal: number): void {
+  const data = getData();
+  if (!data.settings) data.settings = { dailyGoal: 60, theme: 'light' };
+  data.settings.dailyGoal = goal;
+  saveData(data);
+}
+
+export function getTheme(): string {
+  const data = getData();
+  return data.settings?.theme || 'light';
+}
+
+export function setTheme(theme: string): void {
+  const data = getData();
+  if (!data.settings) data.settings = { dailyGoal: 60, theme: 'light' };
+  data.settings.theme = theme as any;
+  saveData(data);
+  if (typeof document !== 'undefined') {
+    document.documentElement.setAttribute('data-theme', theme);
+  }
+}
+
+// --- Stats & Analytics Helpers ---
+export function getDailyStats(dateStr?: string): { timeSpent: number; topicsStudied: number } {
+  return { timeSpent: 0, topicsStudied: 0 };
+}
+
+export function getTodayStudyTime(): number {
+  return 0;
+}
+
+export function getMonthStudyTime(): number {
+  return 0;
+}
+
 export function getActiveCoursesCount(): number {
   return getCourses().length;
 }
@@ -194,10 +237,10 @@ export function getCompletedTopicsCount(): number {
 }
 
 export function getRevisionStreak(): number {
-  return 0; // default safe fallback tracker
+  return 0;
 }
 
-// --- Backup & Sync Functions ---
+// --- Backup & Sync ---
 export function exportData(): string {
   return JSON.stringify(getData(), null, 2);
 }
