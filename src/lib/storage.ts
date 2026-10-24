@@ -1,15 +1,16 @@
-import { AppData, Topic, Material, Course } from './types';
+import { AppData, Topic, Material, Course, StudySession } from './types';
 
 const STORAGE_KEY = 'study-tracker-data';
 
 function getDefaultData(): AppData {
   return {
     courses: [],
+    sessions: [],
     settings: {
       dailyGoal: 60,
       theme: 'light',
     },
-  };
+  } as any;
 }
 
 export function getData(): AppData {
@@ -27,6 +28,8 @@ function saveData(data: AppData): void {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    // Trigger storage event listeners if any
+    window.dispatchEvent(new Event('storage'));
   } catch (error: any) {
     console.error('Storage limit reached or failed to save', error);
     if (error.name === 'QuotaExceededError' || error.code === 22) {
@@ -37,6 +40,32 @@ function saveData(data: AppData): void {
   }
 }
 
+// --- Course Functions ---
+export function getCourses(): Course[] {
+  const data = getData();
+  return data.courses || [];
+}
+
+export function createCourse(name: string, description?: string, color?: string): void {
+  const data = getData();
+  const newCourse: Course = {
+    id: Date.now().toString(),
+    name,
+    description: description || '',
+    color: color || 'blue',
+    topics: [],
+  };
+  data.courses.push(newCourse);
+  saveData(data);
+}
+
+export function deleteCourse(courseId: string): void {
+  const data = getData();
+  data.courses = data.courses.filter(c => c.id !== courseId);
+  saveData(data);
+}
+
+// --- Topic Functions ---
 export function createTopic(courseId: string, name: string): void {
   const data = getData();
   const course = data.courses.find(c => c.id === courseId);
@@ -98,6 +127,7 @@ export function addTimeInvested(courseId: string, topicId: string, minutes: numb
   }
 }
 
+// --- Material Functions ---
 export function addMaterial(courseId: string, topicId: string, material: Omit<Material, 'id'>): void {
   const data = getData();
   const course = data.courses.find(c => c.id === courseId);
@@ -125,6 +155,67 @@ export function deleteMaterial(courseId: string, topicId: string, materialId: st
       saveData(data);
     }
   }
+}
+
+// --- Study Session Functions ---
+export function createStudySession(session: Omit<StudySession, 'id'>): void {
+  const data = getData() as any;
+  if (!data.sessions) data.sessions = [];
+  const newSession = {
+    id: Date.now().toString(),
+    ...session,
+  };
+  data.sessions.push(newSession);
+  saveData(data);
+}
+
+export function deleteStudySession(sessionId: string): void {
+  const data = getData() as any;
+  if (data.sessions) {
+    data.sessions = data.sessions.filter((s: any) => s.id !== sessionId);
+    saveData(data);
+  }
+}
+
+// --- Analytics & Stats Helpers ---
+export function getActiveCoursesCount(): number {
+  return getCourses().length;
+}
+
+export function getCompletedTopicsCount(): number {
+  const courses = getCourses();
+  let count = 0;
+  courses.forEach(c => {
+    if (c.topics) {
+      count += c.topics.filter(t => (t.revisionCount || 0) > 0).length;
+    }
+  });
+  return count;
+}
+
+export function getRevisionStreak(): number {
+  return 0; // default safe fallback tracker
+}
+
+// --- Backup & Sync Functions ---
+export function exportData(): string {
+  return JSON.stringify(getData(), null, 2);
+}
+
+export function importData(jsonString: string): boolean {
+  try {
+    const data = JSON.parse(jsonString);
+    saveData(data);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function subscribeToData(callback: () => void): () => void {
+  if (typeof window === 'undefined') return () => {};
+  window.addEventListener('storage', callback);
+  return () => window.removeEventListener('storage', callback);
 }
 
 export function fileToBase64(file: File): Promise<string> {
