@@ -236,7 +236,7 @@ export function setTheme(theme: string): void {
   }
 }
 
-// --- Stats & Analytics Helpers ---
+// --- Stats & Analytics Helpers (Fixed to return arrays to support .reduce() and .map()) ---
 export function getTotalStudyTime(): number {
   const courses = getCourses();
   let total = 0;
@@ -265,8 +265,10 @@ export function getWeekStudyTime(): number {
   return 0;
 }
 
-export function getDailyStats(dateStr?: string): { timeSpent: number; topicsStudied: number } {
-  return { timeSpent: 0, topicsStudied: 0 };
+export function getDailyStats(): { date: string; timeSpent: number; topicsStudied: number }[] {
+  return [
+    { date: new Date().toISOString().split('T')[0], timeSpent: 0, topicsStudied: 0 }
+  ];
 }
 
 export function getTodayStudyTime(): number {
