@@ -90,30 +90,6 @@ export function TopicList({ courseId, topics }: TopicListProps) {
       }
 
       try {
-        // Use Object URL for files up to 100MB so large attachments work instantly without limits
-        const fileUrl = URL.createObjectURL(file);
-
-        addMaterial(courseId, topicId, {
-          name: file.name,
-          type: file.type.includes('pdf') ? 'pdf' : 'image',
-          url: fileUrl,
-          size: file.size,
-        });
-      } catch (error) {
-        console.error('Error uploading file:', error);
-        alert(`Failed to upload ${file.name}`);
-      }
-    }
-
-    setUploadingTopicId(null);
-  };
-      const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/gif', 'image/webp'];
-      if (!allowedTypes.includes(file.type)) {
-        alert(`File ${file.name} has an unsupported format. Only PDF and images are allowed.`);
-        continue;
-      }
-
-      try {
         let fileUrl = '';
         if (file.size <= 4 * 1024 * 1024) {
           fileUrl = await fileToBase64(file);
