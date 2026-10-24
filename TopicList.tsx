@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Topic } from '@/lib/types';
 import { 
-  addTopic, 
+  createTopic, 
   updateTopic, 
   deleteTopic, 
   incrementRevision, 
@@ -41,7 +41,7 @@ export function TopicList({ courseId, topics }: TopicListProps) {
   const handleAddTopic = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTopicName.trim()) return;
-    addTopic(courseId, newTopicName.trim());
+    createTopic(courseId, newTopicName.trim());
     setNewTopicName('');
   };
 
