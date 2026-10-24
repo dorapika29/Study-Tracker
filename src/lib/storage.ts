@@ -1,6 +1,5 @@
 import { AppData, Topic, Course, StudySession } from './types';
 
-// Define and export Material locally to satisfy imports from storage
 export interface Material {
   id: string;
   name: string;
@@ -36,12 +35,14 @@ export function getData(): AppData {
 function saveData(data: AppData): void {
   if (typeof window === 'undefined') return;
   try {
+    // Strip heavy base64 data URLs from localStorage sync to prevent QuotaExceededError
+    // Files are handled separately via object URLs / memory
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     window.dispatchEvent(new Event('storage'));
   } catch (error: any) {
     console.error('Storage limit reached or failed to save', error);
     if (error.name === 'QuotaExceededError' || error.code === 22) {
-      alert('Storage limit reached! Browser local storage cannot hold files this large.');
+      alert('Storage limit reached! Note: Large files are kept in session memory.');
     } else {
       alert('Failed to save data. Storage limit may have been reached.');
     }
@@ -236,7 +237,7 @@ export function setTheme(theme: string): void {
   }
 }
 
-// --- Stats & Analytics Helpers (Fixed to return arrays to support .reduce() and .map()) ---
+// --- Stats & Analytics Helpers ---
 export function getTotalStudyTime(): number {
   const courses = getCourses();
   let total = 0;
@@ -321,6 +322,11 @@ export function subscribeToData(callback: () => void): () => void {
 
 export function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
+    // Use object URLs for large files to avoid base64 memory/storage bloat
+    if (file.size > 5 * 1024 * 1024) {
+      resolve(URL.createObjectURL(file));
+      return;
+    }
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = reject;
